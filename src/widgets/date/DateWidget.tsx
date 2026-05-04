@@ -1,8 +1,9 @@
 import type { DatePayload } from "../../lib/payload";
 import { encodeResult } from "../../lib/payload";
-import { submitAndClose, hapticImpact, hapticNotification } from "../../lib/tma";
-import { resolveStyle, cardClass, pageClass, pageStyle, buttonStyle } from "../../lib/style";
+import { submitAndClose, hapticNotification } from "../../lib/tma";
+import { resolveStyle, cardClass, pageProps, buttonStyle } from "../../lib/style";
 import { ScrollPicker } from "../../components/ScrollPicker";
+import { DatePicker } from "../../components/DatePicker";
 import { useDateState } from "./useDateState";
 
 interface Props {
@@ -34,65 +35,30 @@ export function DateWidget({ payload }: Props) {
   }
 
   return (
-    <div
-      class={pageClass(s.tint, s.liquidGlass)}
-      style={pageStyle(s.tint, s.liquidGlass)}
-    >
+    <div {...pageProps(s.tint, s.liquidGlass)}>
       <div class={`w-full max-w-sm ${cardClass(s.liquidGlass)}`}>
         <h2 class="text-xl font-semibold tracking-tight text-gray-900">
           {MODE_TITLE[payload.mode]}
         </h2>
 
-        {showDate && (
-          <label class="flex flex-col gap-2">
-            {showDateEnd && (
-              <span class="text-xs font-semibold uppercase tracking-widest text-gray-400">From</span>
-            )}
-            <input
-              type="date"
-              value={date}
-              onInput={(e) => {
-                hapticImpact("light");
-                setDate((e.target as HTMLInputElement).value);
-              }}
-              class="w-full rounded-2xl border-0 bg-black/5 px-4 py-3 text-base text-gray-900 outline-none focus:ring-2 focus:ring-blue-500/40 transition"
-            />
-          </label>
+        {showDate && !showDateEnd && (
+          <DatePicker value={date} onChange={setDate} accent={s.accent} />
         )}
 
         {showDateEnd && (
-          <label class="flex flex-col gap-2">
-            <span class="text-xs font-semibold uppercase tracking-widest text-gray-400">To</span>
-            <input
-              type="date"
-              value={dateEnd}
-              min={date}
-              onInput={(e) => {
-                hapticImpact("light");
-                setDateEnd((e.target as HTMLInputElement).value);
-              }}
-              class="w-full rounded-2xl border-0 bg-black/5 px-4 py-3 text-base text-gray-900 outline-none focus:ring-2 focus:ring-blue-500/40 transition"
-            />
-          </label>
+          <>
+            <DatePicker value={date} onChange={setDate} accent={s.accent} label="From" />
+            <DatePicker value={dateEnd} onChange={setDateEnd} accent={s.accent} label="To" />
+          </>
         )}
 
         {showTime && (
           <div class="flex flex-col gap-2">
             <span class="text-xs font-semibold uppercase tracking-widest text-gray-400">Time</span>
             <div class="flex items-center justify-center gap-1 rounded-2xl bg-black/5 py-2">
-              <ScrollPicker
-                items={HOURS}
-                value={hours}
-                onChange={setHours}
-                width="72px"
-              />
-              <span class="text-2xl font-semibold text-gray-400 pb-0.5">:</span>
-              <ScrollPicker
-                items={MINUTES}
-                value={minutes}
-                onChange={setMinutes}
-                width="72px"
-              />
+              <ScrollPicker items={HOURS} value={hours} onChange={setHours} width="72px" />
+              <span class="text-2xl font-semibold text-gray-300 pb-0.5 select-none">:</span>
+              <ScrollPicker items={MINUTES} value={minutes} onChange={setMinutes} width="72px" />
             </div>
           </div>
         )}

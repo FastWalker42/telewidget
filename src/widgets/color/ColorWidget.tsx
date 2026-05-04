@@ -2,29 +2,26 @@ import { useState } from "preact/hooks";
 import type { ColorPayload } from "../../lib/payload";
 import { encodeResult } from "../../lib/payload";
 import { submitAndClose, hapticImpact, hapticNotification } from "../../lib/tma";
-import { resolveStyle, cardClass, pageClass, pageStyle, buttonStyle } from "../../lib/style";
+import { resolveStyle, cardClass, pageProps, buttonStyle } from "../../lib/style";
 
 interface Props {
   payload: ColorPayload;
 }
 
-function hexToRgb(hex: string): string {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `${r}_${g}_${b}`;
+function parseHex(hex: string): [number, number, number] {
+  return [
+    parseInt(hex.slice(1, 3), 16),
+    parseInt(hex.slice(3, 5), 16),
+    parseInt(hex.slice(5, 7), 16),
+  ];
 }
 
-function hexToHsl(hex: string): string {
-  let r = parseInt(hex.slice(1, 3), 16) / 255;
-  let g = parseInt(hex.slice(3, 5), 16) / 255;
-  let b = parseInt(hex.slice(5, 7), 16) / 255;
-
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
+function hexToHsl(hex: string): [number, number, number] {
+  const [ri, gi, bi] = parseHex(hex);
+  const r = ri / 255, g = gi / 255, b = bi / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
   const l = (max + min) / 2;
-  let h = 0;
-  let s = 0;
+  let h = 0, s = 0;
 
   if (max !== min) {
     const d = max - min;
@@ -36,23 +33,23 @@ function hexToHsl(hex: string): string {
     }
   }
 
-  return `${Math.round(h * 360)}_${Math.round(s * 100)}_${Math.round(l * 100)}`;
+  return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100)];
 }
 
-function buildColorResult(hex: string, format: ColorPayload["format"]): string {
-  switch (format) {
-    case "hex": return hex.slice(1).toUpperCase();
-    case "rgb": return hexToRgb(hex);
-    case "hsl": return hexToHsl(hex);
-  }
+type ColorFormat = ColorPayload["format"];
+
+function buildColorResult(hex: string, format: ColorFormat): string {
+  if (format === "hex") return hex.slice(1).toUpperCase();
+  if (format === "rgb") return parseHex(hex).join("_");
+  const [h, s, l] = hexToHsl(hex);
+  return `${h}_${s}_${l}`;
 }
 
-function formatLabel(hex: string, format: ColorPayload["format"]): string {
-  switch (format) {
-    case "hex": return `#${hex.slice(1).toUpperCase()}`;
-    case "rgb": return `rgb(${hexToRgb(hex).replace(/_/g, ", ")})`;
-    case "hsl": return `hsl(${hexToHsl(hex).replace(/_/g, ", ")})`;
-  }
+function formatLabel(hex: string, format: ColorFormat): string {
+  if (format === "hex") return `#${hex.slice(1).toUpperCase()}`;
+  if (format === "rgb") return `rgb(${parseHex(hex).join(", ")})`;
+  const [h, s, l] = hexToHsl(hex);
+  return `hsl(${h}, ${s}%, ${l}%)`;
 }
 
 export function ColorWidget({ payload }: Props) {
@@ -65,24 +62,19 @@ export function ColorWidget({ payload }: Props) {
   }
 
   return (
-    <div
-      class={pageClass(s.tint, s.liquidGlass)}
-      style={pageStyle(s.tint, s.liquidGlass)}
-    >
+    <div {...pageProps(s.tint, s.liquidGlass)}>
       <div class={`w-full max-w-sm ${cardClass(s.liquidGlass)}`}>
         <h2 class="text-xl font-semibold tracking-tight text-gray-900">Select Color</h2>
 
         <div class="flex flex-col items-center gap-5">
-          {/* preview swatch */}
           <div
-            class="w-28 h-28 rounded-3xl shadow-lg transition-all duration-200"
+            class="w-28 h-28 rounded-3xl transition-all duration-200"
             style={{
               backgroundColor: color,
               boxShadow: `0 8px 32px ${color}66`,
             }}
           />
 
-          {/* native color input, styled to look clean */}
           <div class="relative w-full">
             <input
               type="color"

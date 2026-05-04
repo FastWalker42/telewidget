@@ -29,16 +29,21 @@ export function cardClass(liquidGlass: boolean): string {
   return "rounded-3xl p-6 flex flex-col gap-5 bg-white/90 backdrop-blur-sm shadow-xl border border-white/60";
 }
 
-export function pageClass(tint: string, liquidGlass: boolean): string {
-  if (liquidGlass) {
-    return "flex min-h-screen flex-col items-center justify-center p-5 bg-gradient-to-br from-sky-400/30 via-purple-400/20 to-pink-300/30";
-  }
-  return "flex min-h-screen flex-col items-center justify-center p-5";
+export interface PageProps {
+  class: string;
+  style?: Record<string, string>;
 }
 
-export function pageStyle(tint: string, liquidGlass: boolean): Record<string, string> {
-  if (liquidGlass) return {};
-  return { backgroundColor: tint };
+export function pageProps(tint: string, liquidGlass: boolean): PageProps {
+  if (liquidGlass) {
+    return {
+      class: "flex min-h-screen flex-col items-center justify-center p-5 bg-gradient-to-br from-sky-400/30 via-purple-400/20 to-pink-300/30",
+    };
+  }
+  return {
+    class: "flex min-h-screen flex-col items-center justify-center p-5",
+    style: { backgroundColor: tint },
+  };
 }
 
 export function buttonStyle(accent: string): Record<string, string> {
