@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(bun add -d vite @preact/preset-vite tailwindcss @tailwindcss/vite 2>&1)",
+      "PowerShell(tail -10)",
+      "PowerShell(bun add -d vite @preact/preset-vite tailwindcss @tailwindcss/vite)",
+      "PowerShell(bun run build 2>&1)",
+      "WebSearch"
+    ]
+  }
+}

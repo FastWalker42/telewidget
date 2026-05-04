@@ -1,0 +1,21 @@
+{
+  "name": "telewidget",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "preact": "^10.29.1"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.10.5",
+    "@tailwindcss/vite": "^4.2.4",
+    "@types/bun": "latest",
+    "tailwindcss": "^4.2.4",
+    "typescript": "^5",
+    "vite": "^8.0.10"
+  }
+}
