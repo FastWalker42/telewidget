@@ -5,7 +5,10 @@
       "PowerShell(tail -10)",
       "PowerShell(bun add -d vite @preact/preset-vite tailwindcss @tailwindcss/vite)",
       "PowerShell(bun run build 2>&1)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(bun run *)",
+      "WebFetch(domain:core.telegram.org)",
+      "WebFetch(domain:docs.telegram-mini-apps.com)"
     ]
   }
 }

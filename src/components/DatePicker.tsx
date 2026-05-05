@@ -2,12 +2,14 @@ import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import { ScrollPicker } from "./ScrollPicker";
 import { CalendarGrid } from "./CalendarGrid";
 import { hapticImpact } from "../lib/tma";
+import type { Theme } from "../lib/style";
 
 interface Props {
   value: string;
   onChange: (value: string) => void;
   accent: string;
   label?: string;
+  theme?: Theme;
 }
 
 const MONTHS_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -25,7 +27,7 @@ function parseDate(value: string): [number, number, number] {
   return [y ?? new Date().getFullYear(), m ?? 1, d ?? 1];
 }
 
-export function DatePicker({ value, onChange, accent, label }: Props) {
+export function DatePicker({ value, onChange, accent, label, theme }: Props) {
   const [gridMode, setGridMode] = useState(false);
   const [containerH, setContainerH] = useState<number | null>(null);
   const wheelsRef = useRef<HTMLDivElement>(null);
@@ -73,13 +75,14 @@ export function DatePicker({ value, onChange, accent, label }: Props) {
     <div class="flex flex-col gap-2">
       <div class="flex items-center justify-between">
         {label && (
-          <span class="text-xs font-semibold uppercase tracking-widest text-gray-400">
+          <span class="text-xs font-semibold uppercase tracking-widest" style={{ color: theme?.textMuted ?? "#8E8E93" }}>
             {label}
           </span>
         )}
         <button
           onClick={toggle}
-          class="ml-auto flex h-7 w-7 items-center justify-center rounded-lg text-gray-400 hover:bg-black/5 active:scale-90 transition-all"
+          class="ml-auto flex h-7 w-7 items-center justify-center rounded-lg active:scale-90 transition-all"
+          style={{ color: theme?.textMuted ?? "#8E8E93" }}
           title={gridMode ? "Switch to wheels" : "Switch to calendar"}
         >
           {gridMode ? (
@@ -122,25 +125,10 @@ export function DatePicker({ value, onChange, accent, label }: Props) {
             transition: "opacity 250ms ease",
           }}
         >
-          <div class="flex items-center justify-center gap-1 rounded-2xl bg-black/5 py-2">
-            <ScrollPicker
-              items={days}
-              value={pad(day)}
-              onChange={(v) => emit(year, month, parseInt(v))}
-              width="52px"
-            />
-            <ScrollPicker
-              items={months}
-              value={months[month - 1]!}
-              onChange={(v) => emit(year, MONTHS_SHORT.indexOf(v) + 1, day)}
-              width="96px"
-            />
-            <ScrollPicker
-              items={years}
-              value={String(year)}
-              onChange={(v) => emit(parseInt(v), month, day)}
-              width="72px"
-            />
+          <div class="flex items-center justify-center gap-1 rounded-2xl py-2" style={{ backgroundColor: theme?.surface ?? "rgba(0,0,0,0.06)" }}>
+            <ScrollPicker items={days} value={pad(day)} onChange={(v) => emit(year, month, parseInt(v))} width="52px" theme={theme} />
+            <ScrollPicker items={months} value={months[month - 1]!} onChange={(v) => emit(year, MONTHS_SHORT.indexOf(v) + 1, day)} width="96px" theme={theme} />
+            <ScrollPicker items={years} value={String(year)} onChange={(v) => emit(parseInt(v), month, day)} width="72px" theme={theme} />
           </div>
         </div>
 
@@ -154,14 +142,8 @@ export function DatePicker({ value, onChange, accent, label }: Props) {
             transition: "opacity 250ms ease",
           }}
         >
-          <div class="rounded-2xl bg-black/5 px-3 py-3">
-            <CalendarGrid
-              year={year}
-              month={month}
-              day={day}
-              onChange={(y, m, d) => emit(y, m, d)}
-              accent={accent}
-            />
+          <div class="rounded-2xl px-3 py-3" style={{ backgroundColor: theme?.surface ?? "rgba(0,0,0,0.06)" }}>
+            <CalendarGrid year={year} month={month} day={day} onChange={(y, m, d) => emit(y, m, d)} accent={accent} theme={theme} />
           </div>
         </div>
       </div>

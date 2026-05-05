@@ -3,35 +3,25 @@ import { parsePayload, type WidgetPayload } from "./lib/payload";
 import { tmaReady } from "./lib/tma";
 import { DateWidget } from "./widgets/date/DateWidget";
 import { ColorWidget } from "./widgets/color/ColorWidget";
+import { ScheduleWidget } from "./widgets/schedule/ScheduleWidget";
+import { BuilderPage } from "./builder/BuilderPage";
 
 export function App() {
-  const [payload, setPayload] = useState<WidgetPayload | null>(null);
-  const [error, setError] = useState(false);
+  const [payload, setPayload] = useState<WidgetPayload | null | "none">(null);
 
   useEffect(() => {
     tmaReady();
     const p = parsePayload();
-    if (!p) setError(true);
-    else setPayload(p);
+    setPayload(p ?? "none");
   }, []);
 
-  if (error) {
-    return (
-      <div class="flex min-h-screen items-center justify-center bg-gray-50">
-        <p class="text-gray-400 text-sm">Invalid or missing payload.</p>
-      </div>
-    );
-  }
+  if (payload === null) return null;
 
-  if (!payload) return null;
+  if (payload === "none") return <BuilderPage />;
 
-  if (payload.widget === "date") {
-    return <DateWidget payload={payload} />;
-  }
-
-  if (payload.widget === "color") {
-    return <ColorWidget payload={payload} />;
-  }
+  if (payload.widget === "date") return <DateWidget payload={payload} />;
+  if (payload.widget === "color") return <ColorWidget payload={payload} />;
+  if (payload.widget === "schedule") return <ScheduleWidget payload={payload} />;
 
   return null;
 }

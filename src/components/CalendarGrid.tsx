@@ -1,4 +1,5 @@
 import { hapticImpact } from "../lib/tma";
+import type { Theme } from "../lib/style";
 
 interface Props {
   year: number;
@@ -6,6 +7,7 @@ interface Props {
   day: number;
   onChange: (year: number, month: number, day: number) => void;
   accent: string;
+  theme?: Theme;
 }
 
 const WEEKDAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
@@ -19,7 +21,7 @@ function shiftMonth(year: number, month: number, delta: number): [number, number
   return [d.getFullYear(), d.getMonth() + 1];
 }
 
-export function CalendarGrid({ year, month, day, onChange, accent }: Props) {
+export function CalendarGrid({ year, month, day, onChange, accent, theme }: Props) {
   const firstDow = (new Date(year, month - 1, 1).getDay() + 6) % 7;
   const daysInMonth = new Date(year, month, 0).getDate();
   const today = new Date();
@@ -40,16 +42,18 @@ export function CalendarGrid({ year, month, day, onChange, accent }: Props) {
       <div class="flex items-center justify-between px-1">
         <button
           onClick={() => navigate(-1)}
-          class="flex h-7 w-7 items-center justify-center rounded-full text-gray-500 hover:bg-black/5 active:scale-90 transition-all"
+          class="flex h-7 w-7 items-center justify-center rounded-full active:scale-90 transition-all"
+          style={{ color: theme?.textMuted ?? "#8E8E93" }}
         >
           ‹
         </button>
-        <span class="text-sm font-semibold text-gray-800">
+        <span class="text-sm font-semibold" style={{ color: theme?.text ?? "#111111" }}>
           {MONTHS[month - 1]} {year}
         </span>
         <button
           onClick={() => navigate(1)}
-          class="flex h-7 w-7 items-center justify-center rounded-full text-gray-500 hover:bg-black/5 active:scale-90 transition-all"
+          class="flex h-7 w-7 items-center justify-center rounded-full active:scale-90 transition-all"
+          style={{ color: theme?.textMuted ?? "#8E8E93" }}
         >
           ›
         </button>
@@ -57,7 +61,7 @@ export function CalendarGrid({ year, month, day, onChange, accent }: Props) {
 
       <div class="grid grid-cols-7">
         {WEEKDAYS.map((d) => (
-          <div key={d} class="flex h-7 items-center justify-center text-xs font-medium text-gray-400">
+          <div key={d} class="flex h-7 items-center justify-center text-xs font-medium" style={{ color: theme?.textMuted ?? "#8E8E93" }}>
             {d}
           </div>
         ))}
@@ -78,15 +82,14 @@ export function CalendarGrid({ year, month, day, onChange, accent }: Props) {
                 hapticImpact("light");
                 onChange(year, month, d);
               }}
-              class={[
-                "flex h-8 w-full items-center justify-center rounded-full text-sm font-medium transition-all active:scale-90",
+              class="flex h-8 w-full items-center justify-center rounded-full text-sm font-medium transition-all active:scale-90"
+              style={
                 isSelected
-                  ? "text-white shadow-md"
+                  ? { backgroundColor: accent, color: "#ffffff" }
                   : isToday
-                  ? "font-bold text-gray-900 bg-black/5"
-                  : "text-gray-800 hover:bg-black/5",
-              ].join(" ")}
-              style={isSelected ? { backgroundColor: accent } : {}}
+                  ? { backgroundColor: theme?.surface ?? "rgba(0,0,0,0.06)", color: theme?.text ?? "#111111", fontWeight: "700" }
+                  : { color: theme?.text ?? "#111111" }
+              }
             >
               {d}
             </button>

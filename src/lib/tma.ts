@@ -1,6 +1,20 @@
 type HapticImpactStyle = "light" | "medium" | "heavy" | "rigid" | "soft";
 type HapticNotificationType = "error" | "success" | "warning";
 
+export interface TgThemeParams {
+  bg_color?: string;
+  text_color?: string;
+  hint_color?: string;
+  link_color?: string;
+  button_color?: string;
+  button_text_color?: string;
+  secondary_bg_color?: string;
+  header_bg_color?: string;
+  bottom_bar_bg_color?: string;
+  accent_text_color?: string;
+  section_bg_color?: string;
+}
+
 declare global {
   interface Window {
     Telegram?: {
@@ -9,6 +23,9 @@ declare global {
         close(): void;
         ready(): void;
         initData: string;
+        colorScheme: "light" | "dark";
+        themeParams: TgThemeParams;
+        onEvent(event: string, callback: () => void): void;
         HapticFeedback?: {
           impactOccurred(style: HapticImpactStyle): void;
           notificationOccurred(type: HapticNotificationType): void;
@@ -45,4 +62,16 @@ export function hapticSelection(): void {
 
 export function hapticNotification(type: HapticNotificationType): void {
   window.Telegram?.WebApp?.HapticFeedback?.notificationOccurred(type);
+}
+
+export function getTgThemeParams(): TgThemeParams | null {
+  return window.Telegram?.WebApp?.themeParams ?? null;
+}
+
+export function getTgColorScheme(): "light" | "dark" | null {
+  return window.Telegram?.WebApp?.colorScheme ?? null;
+}
+
+export function onTgThemeChange(cb: () => void): void {
+  window.Telegram?.WebApp?.onEvent("themeChanged", cb);
 }

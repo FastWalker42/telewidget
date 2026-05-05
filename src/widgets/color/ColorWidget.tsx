@@ -2,7 +2,7 @@ import { useState } from "preact/hooks";
 import type { ColorPayload } from "../../lib/payload";
 import { encodeResult } from "../../lib/payload";
 import { submitAndClose, hapticImpact, hapticNotification } from "../../lib/tma";
-import { resolveStyle, cardClass, pageProps, buttonStyle } from "../../lib/style";
+import { useResolvedStyle, cardClass, pageProps, buttonStyle } from "../../lib/style";
 
 interface Props {
   payload: ColorPayload;
@@ -53,7 +53,7 @@ function formatLabel(hex: string, format: ColorFormat): string {
 }
 
 export function ColorWidget({ payload }: Props) {
-  const s = resolveStyle(payload.style);
+  const s = useResolvedStyle(payload.style);
   const [color, setColor] = useState(s.accent);
 
   function handleConfirm() {
@@ -62,9 +62,9 @@ export function ColorWidget({ payload }: Props) {
   }
 
   return (
-    <div {...pageProps(s.tint, s.liquidGlass)}>
-      <div class={`w-full max-w-sm ${cardClass(s.liquidGlass)}`}>
-        <h2 class="text-xl font-semibold tracking-tight text-gray-900">Select Color</h2>
+    <div {...pageProps(s.tint, s.liquidGlass, s.dark)}>
+      <div class={`w-full max-w-sm ${cardClass(s.liquidGlass, s.dark)}`}>
+        <h2 class="text-xl font-semibold tracking-tight" style={{ color: s.theme.text }}>Select Color</h2>
 
         <div class="flex flex-col items-center gap-5">
           <div
@@ -88,7 +88,7 @@ export function ColorWidget({ payload }: Props) {
             />
           </div>
 
-          <span class="text-sm font-mono text-gray-500">
+          <span class="text-sm font-mono" style={{ color: s.theme.textSub }}>
             {formatLabel(color, payload.format)}
           </span>
         </div>
